@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace WebSupport.API.Controllers
+namespace WebSupport.API.Helpers
 {
 
   public static class ApiHelper
