@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace WebSupport.API.Models
+﻿namespace WebSupport.API.Models
 {
     public class UserModel
     {

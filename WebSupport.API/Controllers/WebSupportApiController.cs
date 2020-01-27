@@ -1,13 +1,8 @@
-﻿using System;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using WebSupport.API.Helpers;
-using WebSupport.API.Models;
 
 namespace WebSupport.API.Controllers
 {
@@ -16,10 +11,16 @@ namespace WebSupport.API.Controllers
     public class WebSupportApiController : BaseController
     {
         private readonly ILogger<WebSupportApiController> _logger;
+        private readonly IConfiguration _config;
+        private readonly string apiId;
+        private readonly string apiSecret;
 
-        public WebSupportApiController(ILogger<WebSupportApiController> logger)
+        public WebSupportApiController(ILogger<WebSupportApiController> logger, IConfiguration config)
         {
             _logger = logger;
+            _config = config;
+            apiId = _config.GetValue<string>("AuthApiModel:ApiId");
+            apiSecret = _config.GetValue<string>("AuthApiModel:ApiSecret");
         }
 
         // GET: api/WebSupportApi 
@@ -31,22 +32,21 @@ namespace WebSupport.API.Controllers
 
         [Route("GetAllUsers")]
         [HttpGet("{page:int?}/{pageSize:int?}")]
-        public async Task<UserModel> GetAllUsers(int? page, int? pageSize)
+        public async Task<JsonResult> GetAllUsers(int? page, int? pageSize)
         {
-            ApiHelper.InitializeClient();
+            var path = "/v1/user/self";
+            var method = "GET";
 
-            // C# 8 feature
-            using var response = await ApiHelper.ApiClient.GetAsync(ApiHelper.path);
+            var client = ApiHelper.InitializeClient(apiId, apiSecret, path, method);
+            var response = await client.GetStringAsync(path);
 
-            if (response.IsSuccessStatusCode)
+            if (response.Length > 0)
             {
-                var user = await response.Content.ReadAsAsync<UserModel>();
-
-                return user;
+                return new JsonResult(response);
             }
             else
             {
-                throw new Exception(response.ReasonPhrase);
+                return new JsonResult("oops");
             }
         }
 
