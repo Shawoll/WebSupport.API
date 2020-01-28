@@ -12,7 +12,7 @@ namespace WebSupport.API.UnitTest
         [Test]
         public void Test1()
         {
-            var url = $"/WebSupportApiController";
+            var url = "/WebSupportApiController";
 
             Assert.Pass();
         }

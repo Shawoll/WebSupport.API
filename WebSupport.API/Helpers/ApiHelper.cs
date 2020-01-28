@@ -8,25 +8,27 @@ namespace WebSupport.API.Helpers
 {
     public static class ApiHelper
     {
-        public static HttpClient ApiClient { get; set; }
+        public static HttpClient HttpClient { get; set; }
 
         private static string api = "https://rest.websupport.sk";
 
         public static HttpClient InitializeClient(string id, string sec, string p, string m)
         {
-            ApiClient = new HttpClient();
-            ApiClient.DefaultRequestHeaders.Authorization = 
-                new AuthenticationHeaderValue("Basic", CreateBase64EncodedString(id, sec, p, m));
-            ApiClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
-            ApiClient.DefaultRequestHeaders.TryAddWithoutValidation("Accept", "application/json");
-            ApiClient.DefaultRequestHeaders.Date = DateTime.UtcNow; 
-            ApiClient.BaseAddress = new Uri(api);
-            return ApiClient;
+            HttpClient = new HttpClient();
+            HttpClient.BaseAddress = new Uri(api);
+            HttpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Basic ", CreateBase64EncodedString(id, sec, p, m));
+            HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
+            HttpClient.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/json"));
+            HttpClient.DefaultRequestHeaders.Date = DateHeader();
+            HttpClient.DefaultRequestHeaders.Add("User-Agent", "C# API test program");
+            return HttpClient;
         }
 
         private static string CreateBase64EncodedString(string id, string sec, string p, string m)
         {
-            HMACSHA1 hmscha = new HMACSHA1(Encoding.ASCII.GetBytes(sec), true);
+            HMACSHA1 hmscha = new HMACSHA1(Encoding.ASCII.GetBytes(sec));
             string cnncl = CreateCanonical(m, p);
             byte[] canonical = Encoding.ASCII.GetBytes(cnncl);
             byte[] signatureByte = hmscha.ComputeHash(canonical);
@@ -44,9 +46,21 @@ namespace WebSupport.API.Helpers
             return (long)timeSpan.TotalSeconds;
         }
 
+        private static long UnixTimeNowTest()
+        {
+            var unixTimestamp = (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
+
+            return unixTimestamp;
+        }
+
+        private static DateTimeOffset DateHeader()
+        {
+            return DateTime.Parse(DateTime.UtcNow.ToString("s"));
+        }
+
         private static string CreateCanonical(string method, string path)
         {
-            var canonical = $"{method} {path} {UnixTimeNow().ToString()}";
+            var canonical = $"{method} {path} {UnixTimeNowTest()}";
 
             return canonical;
         }
