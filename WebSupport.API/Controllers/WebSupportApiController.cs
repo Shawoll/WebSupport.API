@@ -27,20 +27,19 @@ namespace WebSupport.API.Controllers
         [HttpGet]
         public string Get()
         {
-            return "WebSupport.API";
+            return "<h1>WebSupport.API</h1>";
         }
 
         [Route("GetAllUsers")]
         [HttpGet("{page:int?}/{pageSize:int?}")]
-        public async Task<JsonResult> GetAllUsers(int? page, int? pageSize)
+        public JsonResult GetAllUsers(int? page, int? pageSize)
         {
             var path = "/v1/user/self";
-            var method = "GET";
 
-            var client = ApiHelper.InitializeClient(apiId, apiSecret, path, method);
-            var response = await client.GetStringAsync(path);
+            var client = ApiHelper.InitializeClient(apiId, apiSecret, path, "GET");
+            var response = client.GetAsync(path).Result;
 
-            if (response.Length > 0)
+            if (response.IsSuccessStatusCode)
             {
                 return new JsonResult(response);
             }

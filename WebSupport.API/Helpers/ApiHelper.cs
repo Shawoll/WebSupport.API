@@ -16,13 +16,12 @@ namespace WebSupport.API.Helpers
         {
             HttpClient = new HttpClient();
             HttpClient.BaseAddress = new Uri(api);
-            HttpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Basic ", CreateBase64EncodedString(id, sec, p, m));
+            HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", CreateBase64EncodedString(id, sec, p, m));
             HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
-            HttpClient.DefaultRequestHeaders.Accept.Add(
-                new MediaTypeWithQualityHeaderValue("application/json"));
+            HttpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            HttpClient.DefaultRequestHeaders.AcceptCharset.Add(new StringWithQualityHeaderValue("utf-8"));
             HttpClient.DefaultRequestHeaders.Date = DateHeader();
-            HttpClient.DefaultRequestHeaders.Add("User-Agent", "C# API test program");
+            HttpClient.DefaultRequestHeaders.Add("User-Agent", "WebSupport.API.Wrapper");
             return HttpClient;
         }
 
@@ -39,30 +38,11 @@ namespace WebSupport.API.Helpers
             return signatureBase64;
         }
 
-        private static long UnixTimeNow()
-        {
-            var timeSpan = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0);
+        private static long UnixTimeNowTest() => (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
 
-            return (long)timeSpan.TotalSeconds;
-        }
+        private static DateTimeOffset DateHeader() => DateTime.Parse(DateTime.UtcNow.ToString("s"));
 
-        private static long UnixTimeNowTest()
-        {
-            var unixTimestamp = (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
-
-            return unixTimestamp;
-        }
-
-        private static DateTimeOffset DateHeader()
-        {
-            return DateTime.Parse(DateTime.UtcNow.ToString("s"));
-        }
-
-        private static string CreateCanonical(string method, string path)
-        {
-            var canonical = $"{method} {path} {UnixTimeNowTest()}";
-
-            return canonical;
-        }
+        private static string CreateCanonical(string method, string path) => $"{method} {path} {UnixTimeNowTest()}";
     }
 }
+
