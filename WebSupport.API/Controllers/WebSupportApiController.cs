@@ -25,13 +25,14 @@ namespace WebSupport.API.Controllers
 
         // GET: api/WebSupportApi 
         [HttpGet]
-        public string Get()
+        public IActionResult Get()
         {
-            return "<h1>WebSupport.API</h1>";
+            return Ok(new { name = "WebSupport.API.Wrapper" });
         }
 
         [Route("GetAllUsers")]
-        [HttpGet("{page:int?}/{pageSize:int?}")]
+        [HttpGet("getallusers/{page:int?}/{pageSize:int?}")]
+        [Produces("application/json")]
         public JsonResult GetAllUsers(int? page, int? pageSize)
         {
             var path = "/v1/user/self";

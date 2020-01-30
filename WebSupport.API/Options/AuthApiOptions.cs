@@ -1,6 +1,6 @@
-﻿namespace WebSupport.API.Models
+﻿namespace WebSupport.API.Options
 {
-    public class AuthApiModel
+    public class AuthApiOptions
     {
         public string ApiId { get; set; }
         public string ApiSecret { get; set; }

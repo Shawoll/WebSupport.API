@@ -16,7 +16,7 @@ namespace WebSupport.API.Helpers
         {
             HttpClient = new HttpClient();
             HttpClient.BaseAddress = new Uri(api);
-            HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", CreateBase64EncodedString(id, sec, p, m));
+            HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", GetBase64EncodedString(id,sec,p,m));
             HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
             HttpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             HttpClient.DefaultRequestHeaders.AcceptCharset.Add(new StringWithQualityHeaderValue("utf-8"));
@@ -25,7 +25,7 @@ namespace WebSupport.API.Helpers
             return HttpClient;
         }
 
-        private static string CreateBase64EncodedString(string id, string sec, string p, string m)
+        private static string GetBase64EncodedString(string id, string sec, string p, string m)
         {
             HMACSHA1 hmscha = new HMACSHA1(Encoding.ASCII.GetBytes(sec));
             string cnncl = CreateCanonical(m, p);
